@@ -42,7 +42,8 @@ def create_spec_file():
     src_path = project_root / "src"
     icon_path = project_root / "principal.jpeg"
     
-    spec_content = f'''# -*- mode: python ; coding: utf-8 -*-
+    spec_content = f'''# -*- coding: utf-8 -*-
+# -*- mode: python ; coding: utf-8 -*-
 
 import sys
 from pathlib import Path
@@ -134,7 +135,7 @@ if sys.platform == 'darwin':
         bundle_identifier='mx.sistema.iiwa.app',
         info_plist={{
             'CFBundleDisplayName': 'App IIWA',
-            'CFBundleGetInfoString': 'Aplicación Unificada para Procesamiento de Padrones',
+            'CFBundleGetInfoString': 'Aplicacion Unificada para Procesamiento de Padrones',
             'CFBundleIdentifier': 'mx.sistema.iiwa.app',
             'CFBundleVersion': '{get_version()}',
             'CFBundleShortVersionString': '{get_version()}',
@@ -144,7 +145,7 @@ if sys.platform == 'darwin':
 '''
     
     spec_file = Path("app_iiwa.spec")
-    with open(spec_file, 'w') as f:
+    with open(spec_file, 'w', encoding='utf-8') as f:
         f.write(spec_content)
     
     print(f"[OK] Archivo .spec creado: {spec_file}")
