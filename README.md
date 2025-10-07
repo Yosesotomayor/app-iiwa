@@ -1,4 +1,4 @@
-# App IIWA - Sistema de Procesamiento de Padrones de Agua
+# App IIWA - Sistema de Procesamiento de Padrones
 
 ## Desarrollado por INFORA CONSULTORIAS
 
@@ -148,11 +148,11 @@ Para soporte técnico y consultas:
 
 ## INFORMACIÓN TÉCNICA
 
-### Versión: 1.2.0
+### Versión: 1.2.5
 ### Fecha de release: Octubre 2024
 ### Compatibilidad: Windows 10+, macOS 10.15+
 
-### Changelog v1.2.0:
+### Changelog v1.2.5:
 - Ejecutables nativos para Windows y macOS
 - Interfaz optimizada y más estable
 - Detección automática de arquitectura (Intel/Silicon)
@@ -167,4 +167,4 @@ Para soporte técnico y consultas:
 
 ---
 
-**© 2024 INFORA CONSULTORIAS. Todos los derechos reservados.**
+**© 2025 INFORA CONSULTORIAS. Todos los derechos reservados.**
