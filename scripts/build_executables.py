@@ -33,6 +33,11 @@ def clean_build_dirs():
         if Path(dir_name).exists():
             shutil.rmtree(dir_name)
             print(f"[CLEAN] Limpiado directorio: {dir_name}")
+    
+    # Limpiar archivos .spec anteriores
+    for spec_file in Path('.').glob('*.spec'):
+        spec_file.unlink()
+        print(f"[CLEAN] Eliminado archivo spec: {spec_file}")
 
 def create_spec_file():
     """Crea el archivo .spec para PyInstaller"""
@@ -135,7 +140,7 @@ if sys.platform == 'darwin':
         bundle_identifier='mx.sistema.iiwa.app',
         info_plist={{
             'CFBundleDisplayName': 'App IIWA',
-            'CFBundleGetInfoString': 'Aplicacion Unificada para Procesamiento de Padrones',
+            'CFBundleGetInfoString': 'App IIWA - Sistema de Procesamiento de Padrones',
             'CFBundleIdentifier': 'mx.sistema.iiwa.app',
             'CFBundleVersion': '{get_version()}',
             'CFBundleShortVersionString': '{get_version()}',
@@ -144,7 +149,7 @@ if sys.platform == 'darwin':
     )
 '''
     
-    spec_file = Path("app_iiwa.spec")
+    spec_file = Path("app_iiwa_build.spec")
     with open(spec_file, 'w', encoding='utf-8') as f:
         f.write(spec_content)
     
