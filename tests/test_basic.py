@@ -15,7 +15,7 @@ def test_import_app_iiwa():
     try:
         import app_iiwa
 
-        assert app_iiwa.__version__ == "1.2.5"
+        assert app_iiwa.__version__ == "2.0.0"
         assert hasattr(app_iiwa, "main")
         assert callable(app_iiwa.main)
     except ImportError as e:

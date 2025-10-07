@@ -6,7 +6,7 @@ App IIWA - Aplicación Unificada para Procesamiento de Padrones
 Combina las funcionalidades de CAJA y CAMPO en una sola interfaz
 """
 
-__version__ = "1.2.5"
+__version__ = "2.0.0"
 __author__ = "Sistema IIWA"
 __email__ = "iiwa@sistema.mx"
 __license__ = "MIT"
