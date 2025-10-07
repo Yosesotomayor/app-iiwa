@@ -23,8 +23,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        os: [windows-latest, macos-13, macos-latest] # Windows, macOS Intel, macOS Silicon
+        python-version: ['3.11', '3.12']
       fail-fast: false
 
     steps:
@@ -51,7 +51,7 @@ jobs:
         uv run pytest --cov=app_iiwa --cov-report=xml --cov-report=term-missing
 
     - name: Upload coverage to Codecov
-      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+      if: matrix.os == 'macos-latest' && matrix.python-version == '3.11'
       uses: codecov/codecov-action@v3
       with:
         file: ./coverage.xml
@@ -61,7 +61,7 @@ jobs:
 
   lint:
     name: Code Quality
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -99,7 +99,7 @@ jobs:
 
   security:
     name: Security Scan
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -120,7 +120,7 @@ jobs:
 
   build:
     name: Build Package
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     needs: [test, lint]
     if: github.event_name != 'pull_request'
     
@@ -167,10 +167,13 @@ jobs:
         include:
           - os: windows-latest
             artifact-name: windows-executable
-            executable-pattern: "*.exe"
+            platform: Windows-x64
           - os: macos-13  # Intel macOS
             artifact-name: macos-intel-executable
-            executable-pattern: "*.app"
+            platform: macOS-Intel
+          - os: macos-latest  # Silicon macOS
+            artifact-name: macos-silicon-executable
+            platform: macOS-Silicon
     
     steps:
     - name: Checkout code
@@ -200,64 +203,52 @@ jobs:
       with:
         name: ${{ matrix.artifact-name }}
         path: |
-          App-IIWA-v*-Windows-x64.zip
-          App-IIWA-v*-macOS-Intel.zip
+          App-IIWA-v*-${{ matrix.platform }}.zip
           dist_exe/
         retention-days: 90
 
   create-release-bundle:
-    name: Create Release Bundle
-    runs-on: ubuntu-latest
-    needs: [build, build-executables]
-    if: github.event_name == 'release'
+    name: Upload Executables to Release
+    runs-on: macos-latest
+    needs: [build-executables]
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-
-    - name: Install UV
-      uses: astral-sh/setup-uv@v2
-
-    - name: Download build artifacts
-      uses: actions/download-artifact@v3
-      with:
-        name: dist-packages
-        path: dist/
-
     - name: Download Windows executable
       uses: actions/download-artifact@v3
       with:
         name: windows-executable
-        path: executables/windows/
+        path: executables/
 
-    - name: Download macOS executable
+    - name: Download macOS Intel executable
       uses: actions/download-artifact@v3
       with:
         name: macos-intel-executable
-        path: executables/macos/
+        path: executables/
 
-    - name: Upload Windows executable to release
-      if: always()
+    - name: Download macOS Silicon executable
+      uses: actions/download-artifact@v3
+      with:
+        name: macos-silicon-executable
+        path: executables/
+
+    - name: Upload executables to release
+      if: github.event_name == 'release'
       run: |
-        if [ -f executables/windows/App-IIWA-*.zip ]; then
-          gh release upload ${{ github.event.release.tag_name }} executables/windows/App-IIWA-*.zip
-        fi
+        for file in executables/App-IIWA-v*.zip; do
+          if [ -f "$file" ]; then
+            gh release upload ${{ github.event.release.tag_name }} "$file"
+          fi
+        done
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Upload macOS executable to release
-      if: always()
+    - name: List built executables (for manual runs)
+      if: github.event_name == 'workflow_dispatch'
       run: |
-        if [ -f executables/macos/App-IIWA-*.zip ]; then
-          gh release upload ${{ github.event.release.tag_name }} executables/macos/App-IIWA-*.zip
-        fi
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        echo "Ejecutables construidos:"
+        ls -la executables/
+        echo "Para un release, estos archivos se subirían automáticamente."
 
   publish:
     name: Publish to PyPI

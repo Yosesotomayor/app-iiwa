@@ -197,10 +197,17 @@ def create_release_bundle():
     system = platform.system().lower()
     
     if system == 'darwin':
+        # Detectar arquitectura de macOS
+        arch = platform.machine().lower()
+        if arch == 'arm64':
+            platform_name = "macOS-Silicon"
+        else:
+            platform_name = "macOS-Intel"
+        
         # En macOS, comprimir la app
         app_path = Path("dist_exe/App-IIWA.app")
         if app_path.exists():
-            bundle_name = f"App-IIWA-v{version}-macOS-Intel.zip"
+            bundle_name = f"App-IIWA-v{version}-{platform_name}.zip"
             
             with zipfile.ZipFile(bundle_name, 'w', zipfile.ZIP_DEFLATED) as zf:
                 for root, dirs, files in os.walk(app_path):
