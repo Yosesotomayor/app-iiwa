@@ -9,7 +9,7 @@
 	<key>CFBundleGetInfoString</key>
 	<string>App IIWA - Sistema de Procesamiento de Padrones</string>
 	<key>CFBundleIconFile</key>
-	<string>icon-windowed.icns</string>
+	<string>generated-3fdac384342fb77b03e210e72710937608a0d87792143925fd63cf7974339dfd.icns</string>
 	<key>CFBundleIdentifier</key>
 	<string>mx.sistema.iiwa.app</string>
 	<key>CFBundleInfoDictionaryVersion</key>

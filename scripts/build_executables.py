@@ -128,7 +128,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    # icon=str(project_root / "principal.jpeg") if (project_root / "principal.jpeg").exists() else None,
+    icon=str(project_root / "icon.ico") if (project_root / "icon.ico").exists() else None,
 )
 
 # Para macOS, crear también un bundle .app
@@ -136,7 +136,7 @@ if sys.platform == 'darwin':
     app = BUNDLE(
         exe,
         name='App-IIWA.app',
-        icon=None,
+        icon=str(project_root / "icon.png") if (project_root / "icon.png").exists() else None,
         bundle_identifier='mx.sistema.iiwa.app',
         info_plist={{
             'CFBundleDisplayName': 'App IIWA',
@@ -249,6 +249,16 @@ def main():
     project_root = Path(__file__).parent.parent
     os.chdir(project_root)
     print(f"DIRECTORIO: {project_root}")
+    
+    # Generar iconos desde principal.jpeg
+    print("ICONOS: Generando iconos desde principal.jpeg...")
+    try:
+        result = subprocess.run([sys.executable, 'scripts/generate_icons.py'], 
+                              check=True, capture_output=True, text=True)
+        print("OK: Iconos generados exitosamente")
+    except subprocess.CalledProcessError as e:
+        print(f"ADVERTENCIA: No se pudieron generar iconos: {e.stderr}")
+        print("Continuando sin iconos personalizados...")
     
     # Limpiar directorios anteriores
     clean_build_dirs()
