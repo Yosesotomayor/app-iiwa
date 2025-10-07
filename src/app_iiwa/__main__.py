@@ -6,7 +6,7 @@ Punto de entrada para ejecutar App IIWA como módulo
 Uso: python -m app_iiwa
 """
 
-from app_iiwa import main
+from . import main
 
 if __name__ == "__main__":
     main()
