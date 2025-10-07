@@ -262,24 +262,45 @@ def run_proceso_campo(sistema_path: Path, data_dir: Path, output_dir: Path, log_
             duplicados.to_excel(writer, sheet_name="DUPLICADOS", index=False)
         tmp_reporte.replace(reporte_path)
 
-        # Reporte para macro
-        log_func("Creando excel para macro...")
+        # Reporte para macro - dividido por código postal
+        log_func("Creando excel para macro (dividido por código postal)...")
         out_macro = output_dir / 'reporte_macro.xlsx'
-        reporte_macro = df[['ClaveCatastral', 'Propietario', 'Domicilio', 'CodigoPostal', 
-                          'UltimoPago' ,'NumerodeCuenta', 'TipoConsumo', 
-                          'TipoConexion', 'Zona', 'bimInicial', 'bimfinal']].copy()
         
-        reporte_macro['agua'] = df['agua'] + df['actualizacionagua']
-        reporte_macro['drenaje'] = df['drenaje'] + df['actualizaciondrenaje']
-        reporte_macro['recargos'] = df['recargosagua'] + df['recargosdrenaje']
-        reporte_macro['mejoras'] = df['mejoras']
-        reporte_macro['iva'] = df['iva']
-        reporte_macro['total'] = (reporte_macro['iva'] + reporte_macro['mejoras'] + 
-                                 reporte_macro['recargos'] + reporte_macro['drenaje'] + 
-                                 reporte_macro['agua'])
-        reporte_macro['Domicilio'] = reporte_macro['Domicilio'].astype(str).str.replace('nan', '')
-
-        reporte_macro.to_excel(out_macro, index=False)
+        # Preparar datos base para el reporte macro
+        reporte_macro_base = df[['ClaveCatastral', 'Propietario', 'Domicilio', 'CodigoPostal', 
+                               'UltimoPago' ,'NumerodeCuenta', 'TipoConsumo', 
+                               'TipoConexion', 'Zona', 'bimInicial', 'bimfinal']].copy()
+        
+        reporte_macro_base['agua'] = df['agua'] + df['actualizacionagua']
+        reporte_macro_base['drenaje'] = df['drenaje'] + df['actualizaciondrenaje']
+        reporte_macro_base['recargos'] = df['recargosagua'] + df['recargosdrenaje']
+        reporte_macro_base['mejoras'] = df['mejoras']
+        reporte_macro_base['iva'] = df['iva']
+        reporte_macro_base['total'] = (reporte_macro_base['iva'] + reporte_macro_base['mejoras'] + 
+                                     reporte_macro_base['recargos'] + reporte_macro_base['drenaje'] + 
+                                     reporte_macro_base['agua'])
+        reporte_macro_base['Domicilio'] = reporte_macro_base['Domicilio'].astype(str).str.replace('nan', '')
+        
+        # Crear el Excel con una hoja por código postal
+        tmp_macro = out_macro.with_suffix(".tmp.xlsx")
+        with pd.ExcelWriter(tmp_macro, mode="w", engine="openpyxl") as writer:
+            for cp in codigos_postales:
+                # Filtrar datos para este código postal específico
+                datos_cp = reporte_macro_base[reporte_macro_base['CodigoPostal'] == cp].copy()
+                
+                # Quitar la columna CodigoPostal ya que es redundante en cada hoja
+                datos_cp = datos_cp.drop(columns=['CodigoPostal'])
+                
+                # Nombre de la hoja
+                nombre_hoja = f"CP {cp}"
+                
+                # Escribir a la hoja correspondiente
+                datos_cp.to_excel(writer, sheet_name=nombre_hoja, index=False)
+                
+                log_func(f"  📊 CP {cp}: {len(datos_cp)} registros")
+        
+        tmp_macro.replace(out_macro)
+        log_func(f"  ✅ Reporte macro creado con {len(codigos_postales)} hojas (una por CP)")
 
         # Libro por CP
         log_func("Generando libro por códigos postales...")
@@ -531,7 +552,7 @@ def run_proceso_caja(sistema_path: Path, data_dir: Path, output_dir: Path, log_f
 
         # Consolidar a Excel final
         log_func("[7/7] Consolidando a Excel final…")
-        salida_path = output_dir / "reporte_completo.xlsx"
+        salida_path = output_dir / "REPORTE_COMPLETO.xlsx"
         
         with pd.ExcelWriter(salida_path, engine="openpyxl") as writer:
             # Hoja SISTEMA - usar el archivo seleccionado por el usuario
@@ -620,9 +641,8 @@ class AppIIWA:
         
         # Configurar colores y tema
         try:
-            # Configurar tema oscuro elegante que complemente el logo
-            # Usar colores que armonicen con el logo azul/gris
-            self.root.configure(bg='#1a1a1a')
+            # Usar un fondo claro que funcione bien con ttk en todos los sistemas
+            self.root.configure(bg='#f5f5f5')
             
             # Configurar icono de la aplicación usando el JPEG
             try:
@@ -795,16 +815,28 @@ class AppIIWA:
                                height=15, font=self.font_log_normal)
         self.log_text.pack(side="left", fill="both", expand=True)
         
-        # Configurar tags para diferentes estilos de texto (tema oscuro elegante)
-        # Colores que complementan el logo azul/gris
-        self.log_text.configure(bg='#0d1117', fg='#e6edf3', insertbackground='#58a6ff', 
-                               selectbackground='#264f78', selectforeground='white')
-        self.log_text.tag_configure("normal", font=self.font_log_normal, foreground="#e6edf3")
-        self.log_text.tag_configure("large", font=self.font_log_large, foreground="#f0f6fc")
-        self.log_text.tag_configure("title", font=self.font_log_title, foreground="white")  # Blanco como solicitaste
-        self.log_text.tag_configure("success", font=self.font_log_large, foreground="#3fb950")
-        self.log_text.tag_configure("error", font=self.font_log_large, foreground="#f85149")
-        self.log_text.tag_configure("warning", font=self.font_log_normal, foreground="#d29922")
+        # Configurar tags para diferentes estilos de texto
+        # Colores que funcionan bien en modo claro y oscuro
+        if sys.platform == "darwin":
+            # En macOS, usar colores que se adapten al tema del sistema
+            self.log_text.configure(bg='#2d2d2d', fg='white', insertbackground='white', 
+                                   selectbackground='#4a90e2', selectforeground='white')
+            self.log_text.tag_configure("normal", font=self.font_log_normal, foreground="white")
+            self.log_text.tag_configure("large", font=self.font_log_large, foreground="white")
+            self.log_text.tag_configure("title", font=self.font_log_title, foreground="#4a90e2")  # Azul suave
+            self.log_text.tag_configure("success", font=self.font_log_large, foreground="#52c41a")
+            self.log_text.tag_configure("error", font=self.font_log_large, foreground="#ff4d4f")
+            self.log_text.tag_configure("warning", font=self.font_log_normal, foreground="#faad14")
+        else:
+            # En otros sistemas, usar colores claros
+            self.log_text.configure(bg='white', fg='black', insertbackground='black', 
+                                   selectbackground='#0078d4', selectforeground='white')
+            self.log_text.tag_configure("normal", font=self.font_log_normal, foreground="black")
+            self.log_text.tag_configure("large", font=self.font_log_large, foreground="black")
+            self.log_text.tag_configure("title", font=self.font_log_title, foreground="#0078d4")
+            self.log_text.tag_configure("success", font=self.font_log_large, foreground="#107c10")
+            self.log_text.tag_configure("error", font=self.font_log_large, foreground="#d13438")
+            self.log_text.tag_configure("warning", font=self.font_log_normal, foreground="#ff8c00")
 
         log_scroll = ttk.Scrollbar(log_container, orient="vertical", command=self.log_text.yview)
         log_scroll.pack(side="right", fill="y")
@@ -999,8 +1031,7 @@ class AppIIWA:
             # Aplicar tag si se especifica
             if tag and hasattr(self, 'log_text'):
                 end_index = self.log_text.index("end-1c")
-                self.log_text.tag_add(tag, start_index, end_index)
-            
+                self.log_text.tag_add(tag, start_index, end_index)            
             self.log_text.see("end")
             if state == "disabled":
                 self.log_text.configure(state="disabled")
