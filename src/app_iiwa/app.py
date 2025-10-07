@@ -13,14 +13,14 @@ import re
 import subprocess
 import sys
 import threading
+import tkinter as tk
 import warnings
 from datetime import datetime
 from pathlib import Path
+from tkinter import filedialog, messagebox, ttk
 
 import numpy as np
 import pandas as pd
-import tkinter as tk
-from tkinter import filedialog, messagebox, ttk
 
 warnings.filterwarnings("ignore")
 
