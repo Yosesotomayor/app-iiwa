@@ -24,7 +24,7 @@ def get_version():
                     return line.split('"')[1]
     except Exception:
         pass
-    return "1.2.0"
+    return "1.2.5"
 
 def clean_build_dirs():
     """Limpia directorios de build anteriores"""

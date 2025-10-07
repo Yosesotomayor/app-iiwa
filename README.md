@@ -20,21 +20,21 @@
 
 #### Para Windows:
 1. Ir a la página de descargas: https://github.com/Yosesotomayor/app-iiwa/releases
-2. Descargar el archivo `App-IIWA-v1.2.0-Windows-x64.zip`
+2. Descargar el archivo `App-IIWA-v1.2.5-Windows-x64.zip`
 3. Extraer el archivo ZIP en una carpeta
 4. Hacer doble clic en `App-IIWA.exe`
 5. La aplicación se abre automáticamente
 
 #### Para macOS (Intel):
 1. Ir a la página de descargas: https://github.com/Yosesotomayor/app-iiwa/releases
-2. Descargar el archivo `App-IIWA-v1.2.0-macOS-Intel.zip`
+2. Descargar el archivo `App-IIWA-v1.2.5-macOS-Intel.zip`
 3. Extraer el archivo ZIP
 4. Hacer doble clic en `App-IIWA.app`
 5. Si aparece una advertencia de seguridad, ir a Preferencias del Sistema > Seguridad y permitir la aplicación
 
 #### Para macOS (Silicon/M1/M2):
 1. Ir a la página de descargas: https://github.com/Yosesotomayor/app-iiwa/releases
-2. Descargar el archivo `App-IIWA-v1.2.0-macOS-Silicon.zip`
+2. Descargar el archivo `App-IIWA-v1.2.5-macOS-Silicon.zip`
 3. Extraer el archivo ZIP
 4. Hacer doble clic en `App-IIWA.app`
 5. Si aparece una advertencia de seguridad, ir a Preferencias del Sistema > Seguridad y permitir la aplicación
@@ -44,7 +44,7 @@
 **Solo para usuarios con conocimientos técnicos de Python:**
 
 ```bash
-pip install git+https://github.com/Yosesotomayor/app-iiwa.git@v1.2.0
+pip install git+https://github.com/Yosesotomayor/app-iiwa.git@v1.2.5
 app-iiwa
 ```
 
