@@ -226,11 +226,20 @@ jobs:
         path: executables/
 
     - name: Upload executables to release
-      if: github.event_name == 'release'
+      if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
       run: |
+        # Para releases reales usar el tag del evento
+        if [ "${{ github.event_name }}" = "release" ]; then
+          TAG_NAME="${{ github.event.release.tag_name }}"
+        else
+          # Para workflow_dispatch usar v1.2.5 (release existente)
+          TAG_NAME="v1.2.5"
+        fi
+        
         for file in executables/App-IIWA-v*.zip; do
           if [ -f "$file" ]; then
-            gh release upload ${{ github.event.release.tag_name }} "$file"
+            echo "Subiendo $file al release $TAG_NAME"
+            gh release upload "$TAG_NAME" "$file" --clobber
           fi
         done
       env:
