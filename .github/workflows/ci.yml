@@ -7,6 +7,12 @@ on:
     branches: [ main ]
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build (e.g., v1.2.0)'
+        required: false
+        default: 'v1.2.0'
 
 env:
   UV_SYSTEM_PYTHON: true
@@ -72,7 +78,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        uv sync --group dev
+        uv sync --extra dev
 
     - name: Run black
       run: |
@@ -136,7 +142,7 @@ jobs:
 
     - name: Install build dependencies
       run: |
-        uv sync --group build
+        uv sync --extra build
 
     - name: Build package
       run: |
@@ -155,8 +161,7 @@ jobs:
   build-executables:
     name: Build Executables
     runs-on: ${{ matrix.os }}
-    needs: [build]
-    if: github.event_name == 'release'
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
     strategy:
       matrix:
         include:
@@ -183,7 +188,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        uv sync --all-extras
+        uv sync --extra build
         uv pip install pyinstaller>=6.0.0
 
     - name: Build executable
