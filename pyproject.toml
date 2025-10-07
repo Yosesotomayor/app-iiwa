@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "app-iiwa"
-version = "1.1.0"
+version = "1.2.0"
 description = "Aplicación Unificada para Procesamiento de Padrones - Combina CAMPO y CAJA"
 authors = [
     {name = "Sistema IIWA", email = "iiwa@sistema.mx"}
@@ -62,6 +62,7 @@ build = [
     "build>=0.10.0",
     "twine>=4.0.0",
     "hatchling>=1.0.0",
+    "pyinstaller>=6.0.0",
 ]
 
 [project.scripts]
