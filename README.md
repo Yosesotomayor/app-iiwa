@@ -1,4 +1,4 @@
-# 🔄💧📊 App IIWA - Procesador Unificado de Padrones
+# App IIWA - Procesador Unificado de Padrones
 
 <div align="center">
   <img src="principal.jpeg" alt="App IIWA Logo" width="128" height="128">
@@ -227,7 +227,6 @@ Este proyecto está bajo la Licencia MIT - ver [LICENSE](LICENSE) para detalles 
 ---
 
 <div align="center">
-  <strong>Hecho con ❤️ para el Sistema IIWA</strong>
   <br>
   <sub>Procesamiento inteligente de padrones de agua</sub>
 </div>
