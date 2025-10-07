@@ -153,8 +153,14 @@ exclude_lines = [
 ]
 
 [dependency-groups]
+build = [
+    "pyinstaller>=6.16.0",
+]
 dev = [
     "autopep8>=2.3.2",
+    "black>=25.9.0",
+    "flake8>=7.3.0",
+    "isort>=6.1.0",
     "pytest>=8.4.2",
     "pytest-cov>=7.0.0",
 ]
