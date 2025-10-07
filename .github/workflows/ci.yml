@@ -15,9 +15,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to build (e.g., v1.2.5)'
+        description: 'Version to build (e.g., v2.0.0)'
         required: false
-        default: 'v1.2.5'
+        default: 'v2.0.0'
 
 env:
   UV_SYSTEM_PYTHON: true
@@ -239,8 +239,8 @@ jobs:
         if [ "${{ github.event_name }}" = "release" ]; then
           TAG_NAME="${{ github.event.release.tag_name }}"
         else
-          # Para workflow_dispatch usar v1.2.5 (release existente)
-          TAG_NAME="v1.2.5"
+          # Para workflow_dispatch usar v2.0.0 (release existente)
+          TAG_NAME="v2.0.0"
         fi
         
         for file in executables/App-IIWA-v*.zip; do
