@@ -16,15 +16,13 @@ import threading
 import warnings
 from datetime import datetime
 from pathlib import Path
-from tempfile import NamedTemporaryFile
-
-warnings.filterwarnings("ignore")
-
-import tkinter as tk
-from tkinter import filedialog, messagebox, ttk
 
 import numpy as np
 import pandas as pd
+import tkinter as tk
+from tkinter import filedialog, messagebox, ttk
+
+warnings.filterwarnings("ignore")
 
 # ====================================
 # UTILIDADES COMUNES
@@ -873,9 +871,6 @@ class AppIIWA:
 
             # Configurar icono de la aplicación usando el JPEG
             try:
-                import os
-                from tkinter import PhotoImage
-
                 from PIL import Image, ImageTk
 
                 # Buscar el logo en la raíz del proyecto
@@ -955,7 +950,7 @@ class AppIIWA:
                 font_family = "SF Pro Display"
             else:
                 font_family = "Segoe UI"
-        except:
+        except Exception:
             font_family = "Arial"
 
         self.font_normal = (font_family, 10)
@@ -1341,13 +1336,13 @@ class AppIIWA:
             try:
                 self.logger.log(str(message))
                 return
-            except:
+            except Exception:
                 pass
 
         # Fallback: escribir directamente al widget de texto
         try:
             self.root.after(0, lambda: self._write_to_text_widget(full_message, tag))
-        except:
+        except Exception:
             # Último recurso: print
             print(full_message.strip())
 
@@ -1368,7 +1363,7 @@ class AppIIWA:
             self.log_text.see("end")
             if state == "disabled":
                 self.log_text.configure(state="disabled")
-        except:
+        except Exception:
             pass
 
     def _finish_process(self):

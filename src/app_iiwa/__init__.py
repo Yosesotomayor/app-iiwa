@@ -11,7 +11,8 @@ __author__ = "Sistema IIWA"
 __email__ = "iiwa@sistema.mx"
 __license__ = "MIT"
 __description__ = (
-    "Aplicación Unificada para Procesamiento de Padrones - Combina CAMPO y CAJA"
+    "Aplicación Unificada para Procesamiento de Padrones - "
+    "Combina CAMPO y CAJA"
 )
 
 from .app import AppIIWA
