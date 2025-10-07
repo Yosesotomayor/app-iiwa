@@ -1,9 +1,42 @@
-# Changelog
+# CHANGELOG - App IIWA
+## Desarrollado por INFORA CONSULTORIAS
 
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.2.5] - 2025-01-07
+
+### Added
+- 🏗️ **Native Executables**: Support for Windows x64, macOS Intel, and macOS Silicon executables using PyInstaller
+- 🧪 **Test Suite**: Basic test framework with pytest for app_iiwa module
+- 🤖 **CI/CD Optimization**: Enhanced GitHub Actions workflow with multi-platform builds
+- 📦 **Artifact Management**: Automated executable generation and release attachment
+- 🎯 **Manual Workflow Dispatch**: Added manual trigger capability for workflows
+- 🔧 **Development Dependencies**: Added pytest and other dev tools to project configuration
+
+### Changed
+- ⚡ **Workflow Performance**: Simplified build matrix to focus on essential platforms
+- 🔄 **Action Updates**: Updated upload-artifact and download-artifact to v4
+- 🎨 **Code Formatting**: Applied black and isort formatting across entire codebase
+- 🔒 **Security Analysis**: Streamlined security workflow using only Trivy scanner
+- 📚 **Documentation**: Updated README to professional standard for INFORA CONSULTORIAS
+- 🏗️ **Build System**: Enhanced build script with proper macOS architecture detection
+
+### Fixed
+- 🐛 **Import Issues**: Resolved relative import problems in app_iiwa module
+- ❌ **Test Failures**: Created proper test structure to prevent CI failures
+- 🚨 **Deprecated Actions**: Removed CodeQL v2 and other deprecated workflow components
+- 📝 **Code Style**: Removed emojis from build script for better compatibility
+- 🗂️ **Repository Cleanup**: Removed redundant README files, maintaining single professional version
+
+### Technical Improvements
+- **Testing**: pytest integration with basic module import tests
+- **Code Quality**: black, isort, and flake8 compliance
+- **CI/CD**: Optimized workflow execution time and reliability
+- **Documentation**: Professional README with clear installation and usage instructions
+- **Build Process**: Robust cross-platform executable generation
 
 ## [1.1.0] - 2025-01-07
 

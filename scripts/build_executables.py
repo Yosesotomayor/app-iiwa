@@ -32,7 +32,7 @@ def clean_build_dirs():
     for dir_name in dirs_to_clean:
         if Path(dir_name).exists():
             shutil.rmtree(dir_name)
-            print(f"🧹 Limpiado directorio: {dir_name}")
+            print(f"[CLEAN] Limpiado directorio: {dir_name}")
 
 def create_spec_file():
     """Crea el archivo .spec para PyInstaller"""
@@ -147,13 +147,13 @@ if sys.platform == 'darwin':
     with open(spec_file, 'w') as f:
         f.write(spec_content)
     
-    print(f"✅ Archivo .spec creado: {spec_file}")
+    print(f"[OK] Archivo .spec creado: {spec_file}")
     return spec_file
 
 def build_executable():
     """Construye el ejecutable usando PyInstaller"""
     
-    print(f"🔨 Construyendo ejecutable para {platform.system()}...")
+    print(f"[BUILD] Construyendo ejecutable para {platform.system()}...")
     
     # Crear archivo spec
     spec_file = create_spec_file()
@@ -167,11 +167,11 @@ def build_executable():
             str(spec_file)
         ]
         
-        print(f"🏃‍♂️ Ejecutando: {' '.join(cmd)}")
+        print(f"[EXEC] Ejecutando: {' '.join(cmd)}")
         result = subprocess.run(cmd, check=True, capture_output=True, text=True)
         
-        print("✅ Ejecutable construido exitosamente!")
-        print("📁 Archivos generados:")
+        print("[OK] Ejecutable construido exitosamente!")
+        print("[INFO] Archivos generados:")
         
         dist_path = Path("dist_exe")
         if dist_path.exists():
@@ -181,13 +181,13 @@ def build_executable():
         return True
         
     except subprocess.CalledProcessError as e:
-        print(f"❌ Error construyendo ejecutable:")
+        print(f"[ERROR] Error construyendo ejecutable:")
         print(f"stdout: {e.stdout}")
         print(f"stderr: {e.stderr}")
         return False
     
     except Exception as e:
-        print(f"❌ Error inesperado: {e}")
+        print(f"[ERROR] Error inesperado: {e}")
         return False
 
 def create_release_bundle():
@@ -216,7 +216,7 @@ def create_release_bundle():
                         arc_name = file_path.relative_to(app_path.parent)
                         zf.write(file_path, arc_name)
             
-            print(f"📦 Bundle creado: {bundle_name}")
+            print(f"INFO: Bundle creado: {bundle_name}")
             return bundle_name
     
     elif system == 'windows':
@@ -228,32 +228,32 @@ def create_release_bundle():
             with zipfile.ZipFile(bundle_name, 'w', zipfile.ZIP_DEFLATED) as zf:
                 zf.write(exe_path, exe_path.name)
                 
-            print(f"📦 Bundle creado: {bundle_name}")
+            print(f"INFO: Bundle creado: {bundle_name}")
             return bundle_name
     
     return None
 
 def main():
     """Función principal"""
-    print("🚀 Iniciando construcción de ejecutables App IIWA")
-    print(f"📋 Sistema: {platform.system()} {platform.machine()}")
-    print(f"🔢 Versión: {get_version()}")
+    print("INICIO: Construcción de ejecutables App IIWA")
+    print(f"SISTEMA: {platform.system()} {platform.machine()}")
+    print(f"VERSION: {get_version()}")
     
     # Cambiar al directorio del proyecto
     project_root = Path(__file__).parent.parent
     os.chdir(project_root)
-    print(f"📁 Directorio de trabajo: {project_root}")
+    print(f"DIRECTORIO: {project_root}")
     
     # Limpiar directorios anteriores
     clean_build_dirs()
     
     # Verificar que PyInstaller está disponible
-    print("📦 Verificando PyInstaller...")
+    print("VERIFICACION: PyInstaller...")
     try:
         import PyInstaller
-        print(f"✅ PyInstaller {PyInstaller.__version__} disponible")
+        print(f"OK: PyInstaller {PyInstaller.__version__} disponible")
     except ImportError:
-        print("❌ PyInstaller no está disponible. Instálalo con: uv sync --extra build")
+        print("ERROR: PyInstaller no está disponible. Instálalo con: uv sync --extra build")
         return 1
     
     # Construir ejecutable
@@ -264,9 +264,9 @@ def main():
     # Crear bundle para release
     bundle = create_release_bundle()
     if bundle:
-        print(f"✅ Bundle listo para release: {bundle}")
+        print(f"LISTO: Bundle para release: {bundle}")
     
-    print("🎉 ¡Construcción completada exitosamente!")
+    print("COMPLETADO: Construcción finalizada exitosamente")
     return 0
 
 if __name__ == "__main__":

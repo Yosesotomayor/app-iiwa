@@ -7,23 +7,24 @@ Combina las funcionalidades de CAJA y CAMPO en una sola interfaz
 """
 
 import os
-import sys
-import re
-import queue
-import threading
 import platform
+import queue
+import re
 import subprocess
-from pathlib import Path
-from datetime import datetime
-from tempfile import NamedTemporaryFile
+import sys
+import threading
 import warnings
+from datetime import datetime
+from pathlib import Path
+from tempfile import NamedTemporaryFile
 
 warnings.filterwarnings("ignore")
 
-import pandas as pd
-import numpy as np
 import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
+from tkinter import filedialog, messagebox, ttk
+
+import numpy as np
+import pandas as pd
 
 # ====================================
 # UTILIDADES COMUNES
@@ -37,7 +38,7 @@ def get_desktop_dir() -> Path:
 
     if system == "Windows":
         try:
-            from ctypes import windll, wintypes, create_unicode_buffer
+            from ctypes import create_unicode_buffer, windll, wintypes
 
             CSIDL_DESKTOPDIRECTORY = 0x10
             SHGFP_TYPE_CURRENT = 0
@@ -872,9 +873,10 @@ class AppIIWA:
 
             # Configurar icono de la aplicación usando el JPEG
             try:
-                from tkinter import PhotoImage
-                from PIL import Image, ImageTk
                 import os
+                from tkinter import PhotoImage
+
+                from PIL import Image, ImageTk
 
                 # Buscar el logo en la raíz del proyecto
                 logo_path = Path(__file__).parent.parent.parent / "principal.jpeg"
