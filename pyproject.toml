@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "app-iiwa"
-version = "1.0.0"
+version = "1.1.0"
 description = "Aplicación Unificada para Procesamiento de Padrones - Combina CAMPO y CAJA"
 authors = [
     {name = "Sistema IIWA", email = "iiwa@sistema.mx"}
@@ -32,20 +32,22 @@ classifiers = [
     "Environment :: Win32 (MS Windows)",
     "Environment :: MacOS X",
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = [
     "pandas>=1.5.0",
     "numpy>=1.20.0",
     "openpyxl>=3.0.0",
     "xlsxwriter>=3.0.0",
+    "Pillow>=10.0.0",
+    "tcl>=0.2",
 ]
 
 [project.urls]
-Homepage = "https://github.com/usuario/app-iiwa"
-Repository = "https://github.com/usuario/app-iiwa"
-Issues = "https://github.com/usuario/app-iiwa/issues"
-Documentation = "https://github.com/usuario/app-iiwa#readme"
-Changelog = "https://github.com/usuario/app-iiwa/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/yosesotomayor/app-iiwa"
+Repository = "https://github.com/yosesotomayor/app-iiwa"
+Issues = "https://github.com/yosesotomayor/app-iiwa/issues"
+Documentation = "https://github.com/yosesotomayor/app-iiwa#readme"
+Changelog = "https://github.com/yosesotomayor/app-iiwa/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 dev = [

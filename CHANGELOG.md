@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-01-07
+
+### Added
+- 🖼️ **Logo Corporativo**: Integración del logo profesional principal.jpeg
+- 🎨 **Tema Oscuro Elegante**: Nuevo diseño oscuro que complementa el logo
+- 🔍 **Iconos Optimizados**: Soporte para múltiples tamaños y pantallas Retina
+- ✂️ **Recorte Inteligente**: El logo se recorta automáticamente para mostrar el centro
+- 🖥️ **Mejoras Visuales**: Colores mejorados para mejor legibilidad
+- 📄 **README Mejorado**: Documentación completa con badges y secciones detalladas
+- 🖼️ **Dependencia Pillow**: Manejo profesional de imágenes
+
+### Changed
+- 🎨 Fondo principal cambiado a #1a1a1a para mejor contraste
+- 📝 Área de logs con colores #0d1117 y texto #e6edf3
+- 📝 Fuentes del título cambiadas a blanco como solicitado
+- ⚙️ Algoritmo de redimensionamiento mejorado con LANCZOS
+- 🗂️ Estructura de iconos optimizada para diferentes plataformas
+
+### Fixed
+- 🖼️ Pixelación del logo resuelto con mejor redimensionamiento
+- 💬 Color azul del texto cambiado a blanco según especificaciones
+- 🗄️ Referencias de iconos guardadas para evitar garbage collection
+- 🆘 Compatibilidad mejorada con diferentes versiones de PIL/Pillow
+
 ## [1.0.0] - 2024-10-07
 
 ### Added

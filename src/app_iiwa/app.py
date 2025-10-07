@@ -138,22 +138,21 @@ def exportar_resumenes_en_grid(df_cps: dict, ruta_salida: str,
 
             fila_actual += altura_fila
 
-def run_proceso_campo(sistema_path: Path, base_dir: Path, log_func, month_label: str = "SISTEMA"):
+def run_proceso_campo(sistema_path: Path, data_dir: Path, output_dir: Path, log_func, month_label: str = "SISTEMA"):
     """Ejecuta el proceso CAMPO"""
     try:
-        data_dir = base_dir / 'data'
-        output_dir = base_dir / 'output'
         ensure_dirs(data_dir, output_dir)
 
         log_func("=== INICIANDO PROCESO CAMPO ===")
         
-        # Validaciones
+        # Validaciones - usar archivo SISTEMA seleccionado por el usuario
         if not sistema_path.exists():
-            return False, f"No existe SISTEMA.xlsx en: {sistema_path}"
+            return False, f"No existe el archivo SISTEMA seleccionado: {sistema_path}"
         
+        # Buscar LISTA C.P..xlsx en la carpeta de datos seleccionada por el usuario
         lista_cp_path = data_dir / "LISTA C.P..xlsx"
         if not lista_cp_path.exists():
-            return False, f"Falta LISTA C.P..xlsx en: {lista_cp_path}"
+            return False, f"Falta LISTA C.P..xlsx en la carpeta de datos: {lista_cp_path}"
 
         log_func(f"Leyendo: {sistema_path}")
         df = pd.read_excel(sistema_path, engine="openpyxl")
@@ -314,19 +313,22 @@ def run_proceso_campo(sistema_path: Path, base_dir: Path, log_func, month_label:
 # FUNCIONES DE PROCESAMIENTO CAJA
 # ====================================
 
-def run_proceso_caja(data_dir: Path, output_dir: Path, log_func):
+def run_proceso_caja(sistema_path: Path, data_dir: Path, output_dir: Path, log_func):
     """Ejecuta el proceso CAJA"""
     try:
         log_func("=== INICIANDO PROCESO CAJA ===")
+        log_func(f"📋 Archivo SISTEMA: {sistema_path}")
+        log_func(f"📁 Carpeta de datos: {data_dir}")
+        log_func(f"📁 Carpeta de salida: {output_dir}")
         
         ensure_dirs(data_dir, output_dir)
         
-        reporte_path = data_dir / 'SISTEMA.xlsx'
-        if not reporte_path.exists():
-            return False, f"No existe SISTEMA.xlsx en: {reporte_path}"
+        # Usar el archivo SISTEMA seleccionado por el usuario, no buscar en data_dir
+        if not sistema_path.exists():
+            return False, f"No existe el archivo SISTEMA seleccionado: {sistema_path}"
 
-        log_func(f"Leyendo: {reporte_path}")
-        df = pd.read_excel(reporte_path)
+        log_func(f"Leyendo: {sistema_path}")
+        df = pd.read_excel(sistema_path)
         df['fechapago'] = pd.to_datetime(df['fechapago'], yearfirst=True).dt.strftime('%Y-%m-%d')
 
         # 2024-6 anteriores y sin mejoras
@@ -469,6 +471,17 @@ def run_proceso_caja(data_dir: Path, output_dir: Path, log_func):
         registros_path = data_dir / 'REGISTROS.csv'
         folios_path = data_dir / 'FOLIOS.csv'
         
+        log_func(f"🔍 Buscando archivos en: {data_dir}")
+        log_func(f"🔍 REGISTROS.csv: {'✅ Encontrado' if registros_path.exists() else '❌ No encontrado'} en {registros_path}")
+        log_func(f"🔍 FOLIOS.csv: {'✅ Encontrado' if folios_path.exists() else '❌ No encontrado'} en {folios_path}")
+        
+        # Listar archivos disponibles para ayudar con debug
+        try:
+            files_in_data = list(data_dir.glob('*.csv'))
+            log_func(f"📋 Archivos CSV encontrados en carpeta de datos: {[f.name for f in files_in_data]}")
+        except Exception:
+            pass
+        
         if registros_path.exists() and folios_path.exists():
             log_func("[5/7] Enlazando REGISTROS y FOLIOS…")
             
@@ -521,8 +534,8 @@ def run_proceso_caja(data_dir: Path, output_dir: Path, log_func):
         salida_path = output_dir / "reporte_completo.xlsx"
         
         with pd.ExcelWriter(salida_path, engine="openpyxl") as writer:
-            # Hoja SISTEMA
-            df_sistema = pd.read_excel(reporte_path)
+            # Hoja SISTEMA - usar el archivo seleccionado por el usuario
+            df_sistema = pd.read_excel(sistema_path)
             df_sistema['fechapago'] = pd.to_datetime(df_sistema['fechapago'], yearfirst=True).dt.strftime('%Y-%m-%d')
             df_sistema.to_excel(writer, sheet_name="SISTEMA", index=False)
             
@@ -598,8 +611,87 @@ class AppIIWA:
 
     def setup_window(self):
         """Configura la ventana principal"""
-        self.root.title("App IIWA - Procesador Unificado de Padrones")
-        self.root.geometry("900x700")
+        self.root.title("🔄💧📊 App IIWA - Procesador Unificado de Padrones")
+        self.root.geometry("950x750")
+        
+        # Configurar propiedades de la ventana
+        self.root.resizable(True, True)
+        self.root.minsize(850, 650)
+        
+        # Configurar colores y tema
+        try:
+            # Configurar tema oscuro elegante que complemente el logo
+            # Usar colores que armonicen con el logo azul/gris
+            self.root.configure(bg='#1a1a1a')
+            
+            # Configurar icono de la aplicación usando el JPEG
+            try:
+                from tkinter import PhotoImage
+                from PIL import Image, ImageTk
+                import os
+                
+                # Buscar el logo en la raíz del proyecto
+                logo_path = Path(__file__).parent.parent.parent / "principal.jpeg"
+                if logo_path.exists():
+                    # Cargar imagen original
+                    img = Image.open(logo_path)
+                    
+                    # Recortar la imagen para mostrar el centro más grande
+                    # La imagen original parece tener mucho espacio en blanco alrededor
+                    width, height = img.size
+                    
+                    # Calcular el área de recorte para centrar el logo
+                    # Recortar aproximadamente 25% de cada lado para enfocar el centro
+                    crop_margin = min(width, height) // 4
+                    left = crop_margin
+                    top = crop_margin  
+                    right = width - crop_margin
+                    bottom = height - crop_margin
+                    
+                    # Recortar la imagen
+                    img_cropped = img.crop((left, top, right, bottom))
+                    
+                    # En macOS, usar tamaños más grandes para pantallas Retina
+                    if sys.platform == "darwin":
+                        # Crear iconos de múltiples tamaños para mejor calidad
+                        sizes = [128, 64, 48, 32, 16]  # De mayor a menor
+                        icons = []
+                        
+                        for size in sizes:
+                            # Usar LANCZOS para mejor calidad de redimensionamiento
+                            resized = img_cropped.resize((size, size), Image.Resampling.LANCZOS)
+                            # Aplicar anti-aliasing suave
+                            if hasattr(resized, 'convert'):
+                                resized = resized.convert('RGBA')
+                            icons.append(ImageTk.PhotoImage(resized))
+                        
+                        # Usar el icono más grande como principal
+                        self.logo_icon = icons[0]  # 128x128
+                        self.root.iconphoto(True, *icons)
+                        
+                        # Guardar referencia a todos los iconos para evitar garbage collection
+                        self._icon_refs = icons
+                    else:
+                        # Para otros sistemas, usar tamaño estándar mejorado
+                        img_resized = img_cropped.resize((64, 64), Image.Resampling.LANCZOS)
+                        if hasattr(img_resized, 'convert'):
+                            img_resized = img_resized.convert('RGBA')
+                        self.logo_icon = ImageTk.PhotoImage(img_resized)
+                        self.root.iconphoto(True, self.logo_icon)
+                        
+            except Exception as e:
+                # Si falla la carga del icono, continuar sin él
+                print(f"No se pudo cargar el icono: {e}")
+            
+            # En macOS, configurar algunas propiedades adicionales
+            if sys.platform == "darwin":
+                # Hacer que la ventana se vea más nativa en macOS
+                self.root.tk.call('::tk::unsupported::MacWindowStyle', 
+                                'style', self.root._w, 'documentProc')
+            
+        except Exception:
+            # Si falla algún estilo, continuar sin él
+            pass
         
         # Icono y configuración adicional
         try:
@@ -616,10 +708,10 @@ class AppIIWA:
 
     def setup_variables(self):
         """Inicializa las variables de control"""
-        # Rutas por defecto
-        default_desktop = get_desktop_dir()
-        default_data = default_desktop / "PADRONES_AUTOMATICO" / "App_iiwa" / "data"
-        default_output = default_desktop / "PADRONES_AUTOMATICO" / "App_iiwa" / "output"
+        # Rutas por defecto - detectar automáticamente la ubicación del proyecto
+        project_root = Path(__file__).parent.parent.parent  # Ir desde src/app_iiwa/app.py hasta la raíz
+        default_data = project_root / "data"
+        default_output = project_root / "output"
         
         self.proceso_var = tk.StringVar(value="CAMPO")
         self.data_dir_var = tk.StringVar(value=str(default_data))
@@ -633,51 +725,50 @@ class AppIIWA:
         main_frame.pack(fill="both", expand=True)
 
         # Título
-        title_label = ttk.Label(main_frame, text="🔄 App IIWA", font=self.font_title)
+        title_label = ttk.Label(main_frame, text="App IIWA")
         title_label.pack(pady=(0, 10))
 
         subtitle_label = ttk.Label(main_frame, 
-                                  text="Procesador Unificado para CAMPO y CAJA", 
-                                  font=self.font_normal)
+                                  text="Procesador Unificado para CAMPO y CAJA")
         subtitle_label.pack(pady=(0, 20))
 
         # Sección de selección de proceso
         process_frame = ttk.LabelFrame(main_frame, text="Tipo de Proceso", padding=10)
         process_frame.pack(fill="x", pady=(0, 15))
 
-        ttk.Radiobutton(process_frame, text="📊 CAMPO - Procesamiento de rezagos de agua", 
-                       variable=self.proceso_var, value="CAMPO", font=self.font_normal).pack(anchor="w")
-        ttk.Radiobutton(process_frame, text="💰 CAJA - Análisis de pagos y evidencias", 
-                       variable=self.proceso_var, value="CAJA", font=self.font_normal).pack(anchor="w", pady=(5,0))
+        ttk.Radiobutton(process_frame, text="CAMPO - Procesamiento de rezagos de agua", 
+                       variable=self.proceso_var, value="CAMPO").pack(anchor="w")
+        ttk.Radiobutton(process_frame, text="CAJA - Análisis de pagos y evidencias", 
+                       variable=self.proceso_var, value="CAJA").pack(anchor="w", pady=(5,0))
 
         # Sección de rutas
         paths_frame = ttk.LabelFrame(main_frame, text="Configuración de Rutas", padding=10)
         paths_frame.pack(fill="x", pady=(0, 15))
 
         # Carpeta de datos
-        ttk.Label(paths_frame, text="📁 Carpeta de datos:", font=self.font_normal).grid(row=0, column=0, sticky="w", padx=(0,10))
-        data_entry = ttk.Entry(paths_frame, textvariable=self.data_dir_var, width=60, font=self.font_normal)
+        ttk.Label(paths_frame, text="📁 Carpeta de datos:").grid(row=0, column=0, sticky="w", padx=(0,10))
+        data_entry = ttk.Entry(paths_frame, textvariable=self.data_dir_var, width=60)
         data_entry.grid(row=0, column=1, sticky="ew", padx=(0,5))
         ttk.Button(paths_frame, text="Buscar...", 
                   command=self.browse_data_dir).grid(row=0, column=2)
 
         # Carpeta de salida
-        ttk.Label(paths_frame, text="📤 Carpeta de salida:", font=self.font_normal).grid(row=1, column=0, sticky="w", padx=(0,10), pady=(10,0))
-        output_entry = ttk.Entry(paths_frame, textvariable=self.output_dir_var, width=60, font=self.font_normal)
+        ttk.Label(paths_frame, text="Carpeta de salida:").grid(row=1, column=0, sticky="w", padx=(0,10), pady=(10,0))
+        output_entry = ttk.Entry(paths_frame, textvariable=self.output_dir_var, width=60)
         output_entry.grid(row=1, column=1, sticky="ew", padx=(0,5), pady=(10,0))
         ttk.Button(paths_frame, text="Buscar...", 
                   command=self.browse_output_dir).grid(row=1, column=2, pady=(10,0))
 
         # Archivo SISTEMA (solo para CAMPO)
-        ttk.Label(paths_frame, text="📄 Archivo SISTEMA.xlsx:", font=self.font_normal).grid(row=2, column=0, sticky="w", padx=(0,10), pady=(10,0))
-        sistema_entry = ttk.Entry(paths_frame, textvariable=self.sistema_file_var, width=60, font=self.font_normal)
+        ttk.Label(paths_frame, text="Archivo SISTEMA.xlsx:").grid(row=2, column=0, sticky="w", padx=(0,10), pady=(10,0))
+        sistema_entry = ttk.Entry(paths_frame, textvariable=self.sistema_file_var, width=60)
         sistema_entry.grid(row=2, column=1, sticky="ew", padx=(0,5), pady=(10,0))
         ttk.Button(paths_frame, text="Buscar...", 
                   command=self.browse_sistema_file).grid(row=2, column=2, pady=(10,0))
 
         # Etiqueta de mes (solo para CAMPO)
-        ttk.Label(paths_frame, text="🏷️ Etiqueta de hoja:", font=self.font_normal).grid(row=3, column=0, sticky="w", padx=(0,10), pady=(10,0))
-        month_entry = ttk.Entry(paths_frame, textvariable=self.month_label_var, width=20, font=self.font_normal)
+        ttk.Label(paths_frame, text="Etiqueta de hoja:").grid(row=3, column=0, sticky="w", padx=(0,10), pady=(10,0))
+        month_entry = ttk.Entry(paths_frame, textvariable=self.month_label_var, width=20)
         month_entry.grid(row=3, column=1, sticky="w", padx=(0,5), pady=(10,0))
 
         paths_frame.columnconfigure(1, weight=1)
@@ -690,9 +781,30 @@ class AppIIWA:
         log_container = ttk.Frame(log_frame)
         log_container.pack(fill="both", expand=True)
 
+        # Configurar fuentes para diferentes tipos de mensaje
+        if sys.platform == "darwin":
+            self.font_log_normal = ("Monaco", 9)
+            self.font_log_large = ("Monaco", 11, "bold")
+            self.font_log_title = ("Monaco", 12, "bold")
+        else:
+            self.font_log_normal = ("Consolas", 9)
+            self.font_log_large = ("Consolas", 11, "bold")
+            self.font_log_title = ("Consolas", 12, "bold")
+        
         self.log_text = tk.Text(log_container, wrap="word", state="disabled", 
-                               height=15, font=("Monaco", 9) if sys.platform == "darwin" else ("Consolas", 9))
+                               height=15, font=self.font_log_normal)
         self.log_text.pack(side="left", fill="both", expand=True)
+        
+        # Configurar tags para diferentes estilos de texto (tema oscuro elegante)
+        # Colores que complementan el logo azul/gris
+        self.log_text.configure(bg='#0d1117', fg='#e6edf3', insertbackground='#58a6ff', 
+                               selectbackground='#264f78', selectforeground='white')
+        self.log_text.tag_configure("normal", font=self.font_log_normal, foreground="#e6edf3")
+        self.log_text.tag_configure("large", font=self.font_log_large, foreground="#f0f6fc")
+        self.log_text.tag_configure("title", font=self.font_log_title, foreground="white")  # Blanco como solicitaste
+        self.log_text.tag_configure("success", font=self.font_log_large, foreground="#3fb950")
+        self.log_text.tag_configure("error", font=self.font_log_large, foreground="#f85149")
+        self.log_text.tag_configure("warning", font=self.font_log_normal, foreground="#d29922")
 
         log_scroll = ttk.Scrollbar(log_container, orient="vertical", command=self.log_text.yview)
         log_scroll.pack(side="right", fill="y")
@@ -717,7 +829,7 @@ class AppIIWA:
 
         # Inicializar logger
         self.logger = GuiLogger(self.log_text)
-        self.logger.log("✅ App IIWA iniciada. Selecciona un proceso y las rutas correspondientes.")
+        self._log_to_gui("✅ App IIWA iniciada. Selecciona un proceso y las rutas correspondientes.")
 
     def browse_data_dir(self):
         """Selecciona carpeta de datos"""
@@ -746,7 +858,7 @@ class AppIIWA:
         self.log_text.configure(state="normal")
         self.log_text.delete(1.0, tk.END)
         self.log_text.configure(state="disabled")
-        self.logger.log("📋 Log limpiado.")
+        self._log_to_gui("📋 Log limpiado.")
 
     def open_output_folder(self):
         """Abre la carpeta de salida"""
@@ -771,17 +883,17 @@ class AppIIWA:
 
         proceso = self.proceso_var.get()
         
-        if proceso == "CAMPO":
-            sistema_path = Path(self.sistema_file_var.get())
-            if not sistema_path.exists():
-                messagebox.showerror("Error", f"El archivo SISTEMA.xlsx no existe: {sistema_path}")
-                return
+        # Validar que el archivo SISTEMA existe para ambos procesos
+        sistema_path = Path(self.sistema_file_var.get())
+        if not sistema_path.exists():
+            messagebox.showerror("Error", f"El archivo SISTEMA.xlsx no existe: {sistema_path}")
+            return
 
         self.processing = True
         self.process_button.configure(state="disabled", text="🔄 Procesando...")
         self.progress_bar.start(10)
         
-        self.logger.log(f"🎯 Iniciando proceso {proceso}...")
+        self._log_to_gui(f"🎯 Iniciando proceso {proceso}...")
         
         # Ejecutar en hilo separado
         thread = threading.Thread(target=self._run_process_thread, 
@@ -797,22 +909,25 @@ class AppIIWA:
                 month_label = self.month_label_var.get().strip() or "SISTEMA"
                 
                 success, result = run_proceso_campo(
-                    sistema_path=sistema_path,
-                    base_dir=output_path.parent,  # Base directory
-                    log_func=self.logger.log,
+                    sistema_path=sistema_path,  # Archivo SISTEMA seleccionado por el usuario
+                    data_dir=data_path,         # Carpeta de datos seleccionada por el usuario
+                    output_dir=output_path,     # Carpeta de salida seleccionada por el usuario
+                    log_func=self._log_to_gui,
                     month_label=month_label
                 )
             
             elif proceso == "CAJA":
+                sistema_path = Path(self.sistema_file_var.get())  # Usar el archivo seleccionado también para CAJA
                 success, result = run_proceso_caja(
-                    data_dir=data_path,
-                    output_dir=output_path,
-                    log_func=self.logger.log
+                    sistema_path=sistema_path,  # Archivo SISTEMA seleccionado por el usuario
+                    data_dir=data_path,         # Carpeta de datos seleccionada por el usuario (para REGISTROS.csv y FOLIOS.csv)
+                    output_dir=output_path,     # Carpeta de salida seleccionada por el usuario
+                    log_func=self._log_to_gui
                 )
             
             if success:
-                self.logger.log(f"✅ Proceso {proceso} completado exitosamente!")
-                self.logger.log(f"📁 Resultados disponibles en: {result}")
+                self._log_to_gui(f"✅ Proceso {proceso} completado exitosamente!")
+                self._log_to_gui(f"📁 Resultados disponibles en: {result}")
                 
                 # Mostrar notificación de éxito
                 self.root.after(100, lambda: messagebox.showinfo(
@@ -820,7 +935,7 @@ class AppIIWA:
                     f"El proceso {proceso} se completó exitosamente.\\n\\nResultados en:\\n{result}"
                 ))
             else:
-                self.logger.log(f"❌ Error en proceso {proceso}: {result}")
+                self._log_to_gui(f"❌ Error en proceso {proceso}: {result}")
                 self.root.after(100, lambda: messagebox.showerror(
                     "Error en Proceso", 
                     f"Error en proceso {proceso}:\\n\\n{result}"
@@ -828,41 +943,101 @@ class AppIIWA:
 
         except Exception as e:
             error_msg = f"Error inesperado: {type(e).__name__}: {e}"
-            self.logger.log(f"💥 {error_msg}")
+            self._log_to_gui(f"💥 {error_msg}")
             self.root.after(100, lambda: messagebox.showerror("Error Crítico", error_msg))
         
         finally:
             # Restaurar UI en el hilo principal
             self.root.after(100, self._finish_process)
 
+    def _log_to_gui(self, message):
+        """Función de log que siempre funciona, incluso si GuiLogger falla"""
+        from datetime import datetime
+        timestamp = datetime.now().strftime("[%H:%M:%S] ")
+        full_message = timestamp + str(message) + "\n"
+        
+        # Detectar tipo de mensaje para aplicar estilo
+        msg_str = str(message)
+        tag = None
+        
+        if "¡Bienvenido" in msg_str or "App IIWA" in msg_str:
+            tag = "title"
+        elif "✅" in msg_str or "completado exitosamente" in msg_str:
+            tag = "success"
+        elif "❌" in msg_str or "Error" in msg_str or "💥" in msg_str:
+            tag = "error"
+        elif "⚠️" in msg_str or "Advertencia" in msg_str:
+            tag = "warning"
+        elif "===" in msg_str or "🎯" in msg_str:
+            tag = "large"
+        
+        # Intentar con el logger primero
+        if self.logger:
+            try:
+                self.logger.log(str(message))
+                return
+            except:
+                pass
+        
+        # Fallback: escribir directamente al widget de texto
+        try:
+            self.root.after(0, lambda: self._write_to_text_widget(full_message, tag))
+        except:
+            # Último recurso: print
+            print(full_message.strip())
+    
+    def _write_to_text_widget(self, message, tag=None):
+        """Escribe directamente al widget de texto con opcional tag de estilo"""
+        try:
+            state = self.log_text["state"]
+            if state == "disabled":
+                self.log_text.configure(state="normal")
+            
+            start_index = self.log_text.index("end-1c")
+            self.log_text.insert("end", message)
+            
+            # Aplicar tag si se especifica
+            if tag and hasattr(self, 'log_text'):
+                end_index = self.log_text.index("end-1c")
+                self.log_text.tag_add(tag, start_index, end_index)
+            
+            self.log_text.see("end")
+            if state == "disabled":
+                self.log_text.configure(state="disabled")
+        except:
+            pass
+
     def _finish_process(self):
         """Restaura la UI después de completar el proceso"""
         self.processing = False
-        self.process_button.configure(state="normal", text="🚀 Iniciar Proceso")
+        self.process_button.configure(state="normal", text="Iniciar Proceso")
         self.progress_bar.stop()
-        self.logger.log("⏹️ Proceso finalizado. Listo para nueva ejecución.")
+        self._log_to_gui("⏹️ Proceso finalizado. Listo para nueva ejecución.")
 
     def run(self):
         """Inicia la aplicación"""
-        # Mensaje de bienvenida
+        # Mostrar la ventana
+        self.root.deiconify()
+        
+        # Mensaje de bienvenida (sólo si logger está disponible)
         welcome_msg = """
-🔥 ¡Bienvenido a App IIWA! 🔥
+¡Bienvenido a App IIWA!
 
 Esta aplicación unifica los procesadores CAMPO y CAJA:
 
-📊 CAMPO: Procesa datos de rezagos de agua, genera reportes por CP y análisis detallados
-💰 CAJA: Analiza pagos, evidencias, y genera reportes consolidados con geolocalización
+CAMPO: Procesa datos de rezagos de agua, genera reportes por CP y análisis detallados
+CAJA: Analiza pagos, evidencias, y genera reportes consolidados con geolocalización
 
-📝 Instrucciones:
+Instrucciones:
 1. Selecciona el tipo de proceso (CAMPO o CAJA)
 2. Configura las rutas de datos y salida
 3. Para CAMPO: asegúrate de tener SISTEMA.xlsx y LISTA C.P..xlsx
 4. Para CAJA: asegúrate de tener SISTEMA.xlsx, REGISTROS.csv y FOLIOS.csv
 5. ¡Presiona 'Iniciar Proceso' y observa los logs en tiempo real!
 
-✨ Los logs se actualizan automáticamente mostrando el progreso detallado.
+Los logs se actualizan automáticamente mostrando el progreso detallado.
         """
-        self.logger.log(welcome_msg.strip())
+        self._log_to_gui(welcome_msg.strip())
         
         self.root.mainloop()
 

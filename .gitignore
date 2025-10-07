@@ -146,3 +146,5 @@ private/
 # Release artifacts
 releases/
 build_output/
+
+RELEASE_GUIDE.md

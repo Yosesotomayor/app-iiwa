@@ -1,290 +1,233 @@
-# App IIWA - Procesador Unificado de Padrones
+# 🔄💧📊 App IIWA - Procesador Unificado de Padrones
 
-[![CI/CD Pipeline](https://github.com/usuario/app-iiwa/workflows/CI%2FCD%20Pipeline/badge.svg)](https://github.com/usuario/app-iiwa/actions)
-[![PyPI version](https://badge.fury.io/py/app-iiwa.svg)](https://badge.fury.io/py/app-iiwa)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<div align="center">
+  <img src="principal.jpeg" alt="App IIWA Logo" width="128" height="128">
+  
+  **Aplicación Unificada para el Procesamiento Automatizado de Padrones de Agua**
+  
+  Combina las funcionalidades de **CAMPO** y **CAJA** en una sola interfaz gráfica moderna y elegante.
+  
+  [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+  [![UV](https://img.shields.io/badge/uv-ready-orange)](https://github.com/astral-sh/uv)
+  [![macOS](https://img.shields.io/badge/macOS-supported-success)]()
+  [![Windows](https://img.shields.io/badge/Windows-supported-success)]()
+  [![Linux](https://img.shields.io/badge/Linux-supported-success)]()
+</div>
 
-Una aplicación unificada que combina las funcionalidades de **CAMPO** y **CAJA** en una sola interfaz gráfica intuitiva, desarrollada con gestión moderna de dependencias usando **UV**.
+## ✨ Características Principales
 
-## Características
+- **🎯 Interfaz Unificada**: Una sola aplicación con tema oscuro elegante
+- **🖼️ Logo Profesional**: Icono personalizado optimizado para pantallas Retina
+- **📊 Procesamiento CAMPO**: Análisis de rezagos de agua y reportes por código postal
+- **💰 Procesamiento CAJA**: Análisis de pagos, evidencias y geolocalización
+- **📱 GUI Moderna**: Interfaz gráfica intuitiva con logs en tiempo real y colores elegantes
+- **🔄 Multiplataforma**: Compatible con Windows, macOS y Linux
+- **⚡ Rápido**: Procesamiento optimizado con UV y gestión moderna de dependencias
+- **📈 Reportes Detallados**: Exportación automática a Excel con múltiples hojas
+- **🎨 Tema Oscuro**: Diseño moderno que complementa el logo corporativo
 
-### Proceso CAMPO
+## 🚀 Instalación y Ejecución
 
-- Procesamiento de datos de rezagos de agua
-- Generación de reportes por código postal
-- Análisis detallados por tipo de conexión y consumo
-- Consolidación de agua, drenaje, recargos, mejoras e IVA
-- Creación de reportes para macros
-- Exportación a múltiples formatos Excel
-
-### Proceso CAJA
-
-- Análisis de pagos y evidencias
-- Cálculo de rezagos IIWA (2024-6 y anteriores)
-- Generación de evidencias por fecha de pago
-- Reportes diarios y por código postal
-- Integración con geolocalización (REGISTROS y FOLIOS)
-- Consolidación de múltiples archivos en un reporte final
-
-### Interfaz Unificada
-
-- **Logs en Tiempo Real:** Muestra el progreso detallado con timestamps
-- **Selección Flexible de Rutas:** Carpetas de entrada y salida personalizables
-- **Validaciones Automáticas:** Verificación de archivos requeridos
-- **Ejecución Multi-threaded:** UI responsiva que no se bloquea
-- **Compatibilidad Multi-plataforma:** Windows, macOS, Linux
-
-## Instalación
-
-### Opción 1: Con UV (Recomendado)
-
-1. **Instalar UV** (gestor de dependencias moderno):
-
-   ```bash
-   # macOS/Linux
-   curl -LsSf https://astral.sh/uv/install.sh | sh
-
-   # Windows
-   powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
-
-   # O con pip
-   pip install uv
-   ```
-2. **Clonar y configurar el proyecto:**
-
-   ```bash
-   git clone https://github.com/usuario/app-iiwa.git
-   cd app-iiwa
-   uv sync
-   ```
-3. **Ejecutar la aplicación:**
-
-   ```bash
-   uv run app-iiwa
-   # O alternativamente:
-   python run.py
-   ```
-
-### Opción 2: Desde PyPI
-
+### Método Recomendado (UV)
 ```bash
-# Instalar desde PyPI
-uv add app-iiwa
+# Instalar UV si no lo tienes
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# O con pip tradicional
-pip install app-iiwa
-
-# Ejecutar
-app-iiwa
-```
-
-### Opción 3: Release Binario
-
-1. Ve a [Releases](https://github.com/usuario/app-iiwa/releases)
-2. Descarga `app-iiwa-v1.0.0.zip`
-3. Extrae y ejecuta `run.py`
-
-## Estructura del Proyecto
-
-```
-App_iiwa/
-├── src/app_iiwa/           # Código fuente principal
-│   ├── __init__.py         # Punto de entrada del paquete
-│   └── app.py             # Aplicación principal
-├── tests/                  # Pruebas automatizadas
-├── scripts/               # Scripts de build y utilidades
-│   └── build.py           # Script de construcción
-├── .github/workflows/     # Workflows de CI/CD
-│   └── ci.yml            # Pipeline automatizado
-├── data/                  # Carpeta de datos de entrada
-├── output/               # Carpeta de resultados
-├── pyproject.toml        # Configuración del proyecto (UV/pip)
-├── README.md            # Esta documentación
-├── LICENSE              # Licencia MIT
-├── CHANGELOG.md         # Registro de cambios
-├── .gitignore          # Archivos ignorados por Git
-└── run.py              # Script de ejecución simple
-```
-
-## Archivos Requeridos
-
-### Para Proceso CAMPO:
-
-- `data/SISTEMA.xlsx` - Archivo principal de datos
-- `data/LISTA C.P..xlsx` - Lista de códigos postales
-
-### Para Proceso CAJA:
-
-- `data/SISTEMA.xlsx` - Archivo principal de datos
-- `data/REGISTROS.csv` - Datos de registro (opcional)
-- `data/FOLIOS.csv` - Información de folios (opcional)
-
-## Uso de la Aplicación
-
-1. **Seleccionar Proceso:**
-
-   - Elige entre CAMPO o CAJA
-2. **Configurar Rutas:**
-
-   - Carpeta de datos: archivos de entrada
-   - Carpeta de salida: resultados generados
-   - Archivo SISTEMA.xlsx (para CAMPO)
-3. **Ejecutar:**
-
-   - Presiona "Iniciar Proceso"
-   - Observa logs en tiempo real con timestamps
-   - Los resultados se guardan automáticamente
-4. **Explorar Resultados:**
-
-   - Usa "Abrir Salida" para ver archivos generados
-   - "Limpiar Log" para reset del registro
-
-## Reportes Generados
-
-### CAMPO:
-
-- `ReporteRezagoAgua.xlsx` - Reporte principal consolidado
-- `reporte_macro.xlsx` - Archivo para procesamiento por macros
-- `CodigosPostales.xlsx` - Análisis detallado por CP
-- `resumen_cps.xlsx` - Resumen en formato grid
-
-### CAJA:
-
-- `reporte_completo.xlsx` - Reporte consolidado final
-- `evidencias_x_fecha.xlsx` - Evidencias por fecha de pago
-- `pagos_diarios.xlsx` - Análisis de pagos diarios
-- `pagos_x_cp.xlsx` - Pagos por código postal
-- `E. folio Geolocalización.xlsx` - Datos con geolocalización
-- `sin_folio.xlsx` - Registros sin folio de notificación
-
-## 🔧 Desarrollo
-
-### Configuración del Entorno de Desarrollo
-
-```bash
-# Clonar repositorio
-git clone https://github.com/usuario/app-iiwa.git
+# Clonar el repositorio
+git clone https://github.com/yosesotomayor/app-iiwa.git
 cd app-iiwa
 
-# Instalar con dependencias de desarrollo
-uv sync --group dev
-
-# Ejecutar pruebas
-uv run pytest
-
-# Verificaciones de calidad
-uv run black src/ tests/     # Formateo
-uv run isort src/ tests/     # Organizar imports
-uv run flake8 src/ tests/    # Linting
-uv run mypy src/            # Type checking
+# Ejecutar directamente (UV manejará todo automáticamente)
+python run.py
 ```
 
-### Build y Release
-
+### Método Alternativo (pip)
 ```bash
-# Build completo con verificaciones
+git clone https://github.com/yosesotomayor/app-iiwa.git
+cd app-iiwa
+pip install -e .
+python -m app_iiwa
+```
+
+### Script de Inicio Rápido
+```bash
+# Usar el script que detecta la mejor forma de ejecutar
+./start.sh
+```
+
+## 📋 Guía de Uso Completa
+
+### 🌊 Proceso CAMPO - Rezagos de Agua
+
+**Archivos de entrada requeridos:**
+- 📁 `data/SISTEMA.xlsx`: Datos principales del sistema de agua
+- 📁 `data/LISTA C.P..xlsx`: Lista maestra de códigos postales
+
+**Reportes generados:**
+- 📊 `ReporteRezagoAgua.xlsx`: Reporte principal con análisis completo
+- 🗂️ `CodigosPostales.xlsx`: Desglose detallado por código postal
+- ⚙️ `reporte_macro.xlsx`: Datos optimizados para procesamiento con macros
+- 📈 `resumen_cps.xlsx`: Resumen ejecutivo en formato grid
+
+### 💰 Proceso CAJA - Análisis de Pagos
+
+**Archivos de entrada requeridos:**
+- 📁 `data/SISTEMA.xlsx`: Base de datos de pagos
+- 📁 `data/REGISTROS.csv`: Registros de geolocalización (opcional)
+- 📁 `data/FOLIOS.csv`: Datos de folios IIWA (opcional)
+
+**Reportes generados:**
+- 📋 `reporte_completo.xlsx`: Consolidado general con todas las hojas
+- 📅 `evidencias_x_fecha.xlsx`: Evidencias organizadas por fecha de pago
+- 📊 `pagos_diarios.xlsx`: Análisis diario de recaudación
+- 🏘️ `pagos_x_cp.xlsx`: Análisis por código postal
+- 🗺️ `E. folio Geolocalización.xlsx`: Datos con coordenadas GPS
+
+## 🛠️ Desarrollo y Contribución
+
+### Configurar Entorno de Desarrollo
+```bash
+# Clonar y configurar
+git clone https://github.com/yosesotomayor/app-iiwa.git
+cd app-iiwa
+
+# Instalar dependencias de desarrollo
+uv pip install -e ".[dev]"
+
+# Ejecutar suite completa de pruebas
+pytest --cov=app_iiwa --cov-report=html
+
+# Formatear código
+black src/ tests/
+isort src/ tests/
+
+# Verificación de calidad
+flake8 src/ tests/
+mypy src/
+```
+
+### Arquitectura del Proyecto
+```
+app-iiwa/
+├── 🖼️ principal.jpeg          # Logo corporativo
+├── 📁 src/app_iiwa/           # Código fuente principal
+│   ├── __init__.py            # Metadata y versión
+│   ├── __main__.py            # Punto de entrada como módulo
+│   └── app.py                 # Aplicación principal con GUI
+├── 🧪 tests/                  # Suite de pruebas
+├── 📜 scripts/                # Herramientas de desarrollo
+│   └── build.py               # Script de construcción
+├── ⚙️ .github/workflows/      # Pipelines CI/CD
+├── 🔧 pyproject.toml          # Configuración moderna del proyecto
+├── 🚀 run.py                  # Launcher inteligente
+├── 📋 start.sh                # Script de inicio para Unix
+└── 📖 README.md               # Esta documentación
+```
+
+## 🔧 Solución de Problemas Frecuentes
+
+### ❗ Error de tkinter en macOS
+```bash
+# Solución automática: el run.py detecta y usa Python del sistema
+python run.py
+
+# O instalar Python con soporte tkinter:
+brew install python-tk
+```
+
+### 📦 Problemas con dependencias
+```bash
+# Limpiar caché completamente
+uv cache clean
+rm -rf .venv/
+
+# Reinstalar desde cero
+python run.py
+```
+
+### 🎨 Problemas de visualización
+- La app detecta automáticamente las mejores fuentes disponibles
+- El tema oscuro se adapta automáticamente al sistema
+- Los iconos se optimizan para pantallas Retina en macOS
+
+## 🏗️ Construcción y Release
+
+### Construcción Local
+```bash
+# Usar el script automatizado
 python scripts/build.py
 
-# Solo build del paquete
+# O manualmente
 uv build
-
-# Ejecutar pruebas
-uv run pytest --cov=app_iiwa
 ```
 
-## Crear un Release
+### Release Automático con GitHub Actions
+1. Actualizar versión en `src/app_iiwa/__init__.py`
+2. Actualizar `CHANGELOG.md` con cambios
+3. Crear y push del tag:
+   ```bash
+   git add .
+   git commit -m "Release v1.1.0: Improved UI and logo integration"
+   git tag v1.1.0
+   git push origin main --tags
+   ```
+4. GitHub Actions automáticamente:
+   - ✅ Ejecuta todos los tests
+   - 🏗️ Construye los paquetes
+   - 📋 Crea el release con changelog
+   - 📤 Sube los artefactos
 
-### 1. Preparar Release
+## 🎨 Personalización
 
-```bash
-# 1. Actualizar versión en src/app_iiwa/__init__.py
-# 2. Actualizar CHANGELOG.md
-# 3. Commit cambios
-git add .
-git commit -m "Prepare release v1.0.0"
-git push
-```
+### Cambiar Logo
+1. Reemplazar `principal.jpeg` con tu imagen (recomendado: 512x512px o mayor)
+2. La app automáticamente la recorta y optimiza para diferentes tamaños
 
-### 2. Crear Tag y Release
+### Colores del Tema
+Editar en `src/app_iiwa/app.py`:
+- Fondo principal: `#1a1a1a`
+- Área de logs: `#0d1117`
+- Texto principal: `#e6edf3`
+- Colores de estado personalizables
 
-```bash
-# Crear tag
-git tag -a v1.0.0 -m "Release v1.0.0"
-git push origin v1.0.0
-```
+## 🤝 Contribuciones
 
-### 3. GitHub Release (Automático)
+¡Las contribuciones son bienvenidas!
 
-El workflow de GitHub Actions automáticamente:
+1. 🍴 Fork el proyecto
+2. 🌿 Crea una rama (`git checkout -b feature/amazing-feature`)
+3. ✅ Asegúrate de que los tests pasan (`pytest`)
+4. 📝 Commit con mensaje descriptivo
+5. 📤 Push y crea Pull Request
 
-- ✅ Ejecuta pruebas en múltiples plataformas
-- ✅ Verifica calidad del código
-- ✅ Construye el paquete
-- ✅ Crea bundle de release
-- ✅ Publica en PyPI (opcional)
-- ✅ Adjunta artefactos al release
+## 📊 Estadísticas del Proyecto
 
-## Solución de Problemas
+- **Lenguaje**: Python 3.9+
+- **GUI**: Tkinter con tema personalizado
+- **Gestión de Dependencias**: UV (moderno y rápido)
+- **Procesamiento de Datos**: Pandas + NumPy
+- **Exportación**: OpenPyXL + XlsxWriter
+- **Imágenes**: Pillow para manejo de logo
+- **Tests**: Pytest con cobertura
+- **CI/CD**: GitHub Actions
+- **Licencia**: MIT
 
-### Error: "uv not found"
+## 📄 Licencia
 
-```bash
-# Instalar UV
-curl -LsSf https://astral.sh/uv/install.sh | sh
-# Reiniciar terminal
-```
+Este proyecto está bajo la Licencia MIT - ver [LICENSE](LICENSE) para detalles completos.
 
-### Error: "No existe SISTEMA.xlsx"
+## 🆘 Soporte y Comunidad
 
-- Verifica que el archivo esté en la carpeta de datos especificada
-- El nombre debe ser exactamente "SISTEMA.xlsx"
-
-### Error: "Columna faltante"
-
-- Revisa que SISTEMA.xlsx tenga las columnas requeridas:
-  - CAMPO: agua, drenaje, mejoras, iva, etc.
-  - CAJA: fechapago, FolioImpreso, pagdCosto, etc.
-
-### Logs no se actualizan
-
-- Los logs se actualizan cada 80ms automáticamente
-- Si se cuelga, reinicia la aplicación
-
-## CI/CD Pipeline
-
-El proyecto incluye workflows automatizados de GitHub Actions:
-
-**Testing:** Pruebas en Python 3.8-3.12 en Ubuntu, Windows, macOS
-
-**Code Quality:** Black, isort, flake8, mypy
-
-**Security:** Trivy vulnerability scanning
-
-**Build:** Construcción automática de paquetes
-
-**Release:** Deploy automático a PyPI en releases
-
-**Coverage:** Reportes de cobertura con Codecov
-
-## Requisitos del Sistema
-
-- **Python:** 3.8 o superior
-- **SO:** Windows 10+, macOS 10.15+, Linux (Ubuntu 20.04+)
-- **RAM:** Mínimo 4GB (recomendado 8GB para archivos grandes)
-- **Espacio:** ~100MB para instalación + espacio para datos
-
-## Licencia
-
-Este proyecto está licenciado bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para detalles.📞 Soporte
-
-- **Issues:** [GitHub Issues](https://github.com/usuario/app-iiwa/issues)
-- **Discusiones:** [GitHub Discussions](https://github.com/usuario/app-iiwa/discussions)
-- **Email:** infora@gmail.com
+- 📖 **Documentación**: [GitHub Wiki](https://github.com/yosesotomayor/app-iiwa/wiki)
+- 🐛 **Reportar Bugs**: [GitHub Issues](https://github.com/yosesotomayor/app-iiwa/issues)
+- 💬 **Discusiones**: [GitHub Discussions](https://github.com/yosesotomayor/app-iiwa/discussions)
+- 🚀 **Nuevas Features**: Crear issue con etiqueta `enhancement`
 
 ---
 
-**Versión:** 1.0.0
-**Autor:** Sistema IIWA
-**Fecha:** Octubre 2025
-**Gestión:** UV Package Manager
+<div align="center">
+  <strong>Hecho con ❤️ para el Sistema IIWA</strong>
+  <br>
+  <sub>Procesamiento inteligente de padrones de agua</sub>
+</div>
