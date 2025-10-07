@@ -440,9 +440,9 @@ def run_proceso_caja(sistema_path: Path, data_dir: Path, output_dir: Path, log_f
     """Ejecuta el proceso CAJA"""
     try:
         log_func("=== INICIANDO PROCESO CAJA ===")
-        log_func(f"📋 Archivo SISTEMA: {sistema_path}")
-        log_func(f"📁 Carpeta de datos: {data_dir}")
-        log_func(f"📁 Carpeta de salida: {output_dir}")
+        log_func(f"Archivo SISTEMA: {sistema_path}")
+        log_func(f"Carpeta de datos: {data_dir}")
+        log_func(f"Carpeta de salida: {output_dir}")
 
         ensure_dirs(data_dir, output_dir)
 
@@ -693,7 +693,7 @@ def run_proceso_caja(sistema_path: Path, data_dir: Path, output_dir: Path, log_f
         try:
             files_in_data = list(data_dir.glob("*.csv"))
             log_func(
-                f"📋 Archivos CSV encontrados en carpeta de datos: {[f.name for f in files_in_data]}"
+                f"Archivos CSV encontrados en carpeta de datos: {[f.name for f in files_in_data]}"
             )
         except Exception:
             pass
@@ -857,7 +857,7 @@ class AppIIWA:
 
     def setup_window(self):
         """Configura la ventana principal"""
-        self.root.title("🔄💧📊 App IIWA - Procesador Unificado de Padrones")
+        self.root.title("App IIWA - Procesador de Padrones")
         self.root.geometry("950x750")
 
         # Configurar propiedades de la ventana
@@ -1010,7 +1010,7 @@ class AppIIWA:
         paths_frame.pack(fill="x", pady=(0, 15))
 
         # Carpeta de datos
-        ttk.Label(paths_frame, text="📁 Carpeta de datos:").grid(
+        ttk.Label(paths_frame, text="Carpeta de datos:").grid(
             row=0, column=0, sticky="w", padx=(0, 10)
         )
         data_entry = ttk.Entry(paths_frame, textvariable=self.data_dir_var, width=60)

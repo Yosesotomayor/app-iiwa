@@ -33,11 +33,11 @@ def create_icon():
         # Guardar como PostScript y luego convertir
         ps_file = Path(__file__).parent / 'assets' / 'icon.ps'
         canvas.postscript(file=str(ps_file))
-        print(f"✅ Icono base creado en: {ps_file}")
+        print(f"Icono base creado en: {ps_file}")
         
         # Crear un icono de texto alternativo
         icon_text = """
-🔄 IIWA
+        IIWA
         """.strip()
         
         text_icon_file = Path(__file__).parent / 'assets' / 'icon.txt'
@@ -45,7 +45,7 @@ def create_icon():
         print(f"✅ Icono de texto creado en: {text_icon_file}")
         
     except Exception as e:
-        print(f"⚠️  No se pudo guardar el icono: {e}")
+        print(f"No se pudo guardar el icono: {e}")
     
     root.destroy()
 
