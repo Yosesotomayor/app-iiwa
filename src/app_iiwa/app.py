@@ -424,8 +424,37 @@ def run_proceso_campo(
                 )
         tmp_cp_book.replace(cp_book_path)
 
-        log_func(f"PROCESO CAMPO COMPLETADO. Reportes en: {output_dir}")
-        return True, output_dir
+        # Crear carpeta organizada para CAMPO
+        campo_output_dir = output_dir / "campo_output"
+        ensure_dirs(campo_output_dir)
+        
+        # Mover archivos generados a la carpeta de CAMPO
+        archivos_campo = [
+            "ReporteRezagoAgua.xlsx",
+            "reporte_macro.xlsx", 
+            "CodigosPostales.xlsx"
+        ]
+        
+        for archivo_name in archivos_campo:
+            archivo_path = output_dir / archivo_name
+            if archivo_path.exists():
+                try:
+                    archivo_path.rename(campo_output_dir / archivo_name)
+                    log_func(f"Archivo movido: {archivo_name} -> campo_output/")
+                except Exception as e:
+                    log_func(f"Error moviendo {archivo_name}: {e}")
+        
+        # También mover resumen_cps.xlsx del data_dir si existe
+        resumen_path = data_dir / "resumen_cps.xlsx"
+        if resumen_path.exists():
+            try:
+                resumen_path.rename(campo_output_dir / "resumen_cps.xlsx")
+                log_func("Archivo movido: resumen_cps.xlsx -> campo_output/")
+            except Exception as e:
+                log_func(f"Error moviendo resumen_cps.xlsx: {e}")
+
+        log_func(f"PROCESO CAMPO COMPLETADO. Reportes en: {campo_output_dir}")
+        return True, campo_output_dir
 
     except Exception as e:
         return False, f"{type(e).__name__}: {e}"
@@ -445,13 +474,17 @@ def run_proceso_caja(sistema_path: Path, data_dir: Path, output_dir: Path, log_f
         log_func(f"Carpeta de salida: {output_dir}")
 
         ensure_dirs(data_dir, output_dir)
+        
+        # Crear carpeta organizada para CAJA desde el inicio
+        caja_output_dir = output_dir / "caja_output"
+        ensure_dirs(caja_output_dir)
 
         # Usar el archivo SISTEMA seleccionado por el usuario, no buscar en data_dir
         if not sistema_path.exists():
             return False, f"No existe el archivo SISTEMA seleccionado: {sistema_path}"
 
         log_func(f"Leyendo: {sistema_path}")
-        df = pd.read_excel(sistema_path)
+        df = pd.read_excel(sistema_path, engine="openpyxl")
         df["fechapago"] = pd.to_datetime(df["fechapago"], yearfirst=True).dt.strftime(
             "%Y-%m-%d"
         )
@@ -462,7 +495,7 @@ def run_proceso_caja(sistema_path: Path, data_dir: Path, output_dir: Path, log_f
             (df["conDescripcion"] != "MEJORAS AMBIENTALES") & (df["pagdAño"] < 2025)
         ]
         df_filtrado.to_excel(
-            output_dir / "2024-6_anteriores_y_sin_mejoras_ambientales.xlsx"
+            caja_output_dir / "2024-6_anteriores_y_sin_mejoras_ambientales.xlsx"
         )
 
         # EVIDENCIAS-X fecha de pago
@@ -573,7 +606,7 @@ def run_proceso_caja(sistema_path: Path, data_dir: Path, output_dir: Path, log_f
         for c in ["pago", "REZAGO IIWA 2024-6 y anteriores (pagdCosto)", "20% IIWA"]:
             evidencias_x_fecha[c] = evidencias_x_fecha[c].apply(redondear)
 
-        evidencias_x_fecha.to_excel(output_dir / "evidencias_x_fecha.xlsx")
+        evidencias_x_fecha.to_excel(caja_output_dir / "evidencias_x_fecha.xlsx")
 
         # PAGOS DIARIOS
         log_func("[3/7] Calculando PAGOS DIARIOS…")
@@ -633,7 +666,7 @@ def run_proceso_caja(sistema_path: Path, data_dir: Path, output_dir: Path, log_f
                 tmp["BASE IIWA 2024-6 Anteriores y sin Mejoras Ambientales"]
             ).fillna(0.0)
         )
-        pagos_diarios.to_excel(output_dir / "pagos_diarios.xlsx")
+        pagos_diarios.to_excel(caja_output_dir / "pagos_diarios.xlsx")
 
         # PAGOS X C.P.
         log_func("[4/7] Calculando PAGOS POR C.P.…")
@@ -675,7 +708,7 @@ def run_proceso_caja(sistema_path: Path, data_dir: Path, output_dir: Path, log_f
         pagos_x_cp["20% IIWA"] = (
             pagos_x_cp["BASE IIWA 2024-6 Anteriores y sin Mejoras Ambientales"] * 0.20
         )
-        pagos_x_cp.to_excel(output_dir / "pagos_x_cp.xlsx")
+        pagos_x_cp.to_excel(caja_output_dir / "pagos_x_cp.xlsx")
 
         # Validar archivos adicionales para CAJA
         registros_path = data_dir / "REGISTROS.csv"
@@ -744,7 +777,7 @@ def run_proceso_caja(sistema_path: Path, data_dir: Path, output_dir: Path, log_f
             )
             log_func(f"Total de folios: {len(resultado)}")
 
-            out_geo = output_dir / "E. folio Geolocalización.xlsx"
+            out_geo = caja_output_dir / "E. folio Geolocalización.xlsx"
             resultado.groupby("CodigoPostal", group_keys=True, as_index=True).apply(
                 lambda x: x.sort_values("fechapago", ascending=True)
             ).to_excel(out_geo)
@@ -756,7 +789,7 @@ def run_proceso_caja(sistema_path: Path, data_dir: Path, output_dir: Path, log_f
             sin_geo["longitud_not"] = sin_geo.index.map(
                 df_registros["longitud_not"].to_dict()
             )
-            sin_geo.to_excel(output_dir / "sin_folio.xlsx")
+            sin_geo.to_excel(caja_output_dir / "sin_folio.xlsx")
 
             log_func("[6/7] Generando EVIDENCIAS C.P. y FECHA PAGO…")
             # Lógica similar para evidencias_cp_fecha...
@@ -767,31 +800,44 @@ def run_proceso_caja(sistema_path: Path, data_dir: Path, output_dir: Path, log_f
 
         # Consolidar a Excel final
         log_func("[7/7] Consolidando a Excel final…")
-        salida_path = output_dir / "REPORTE_COMPLETO.xlsx"
+        salida_path = caja_output_dir / "REPORTE_COMPLETO.xlsx"
 
         with pd.ExcelWriter(salida_path, engine="openpyxl") as writer:
             # Hoja SISTEMA - usar el archivo seleccionado por el usuario
-            df_sistema = pd.read_excel(sistema_path)
+            df_sistema = pd.read_excel(sistema_path, engine="openpyxl")
             df_sistema["fechapago"] = pd.to_datetime(
                 df_sistema["fechapago"], yearfirst=True
             ).dt.strftime("%Y-%m-%d")
             df_sistema.to_excel(writer, sheet_name="SISTEMA", index=False)
 
-            # Agregar archivos de salida
-            for archivo in output_dir.glob("*.xlsx"):
+            # Agregar archivos de salida de la carpeta caja_output
+            archivos_procesados = []
+            for archivo in caja_output_dir.glob("*.xlsx"):
                 if (
-                    archivo.name != "reporte_completo.xlsx"
+                    archivo.name != "REPORTE_COMPLETO.xlsx"
                     and not archivo.name.startswith("~")
                 ):
                     try:
-                        df_temp = pd.read_excel(archivo)
+                        df_temp = pd.read_excel(archivo, engine="openpyxl")
                         sheet_name = archivo.stem[:31]  # Limitar nombre de hoja
                         df_temp.to_excel(writer, sheet_name=sheet_name, index=False)
+                        archivos_procesados.append(archivo)
+                        log_func(f"Agregado al reporte: {archivo.name}")
                     except Exception as e:
                         log_func(f"Error procesando {archivo.name}: {e}")
+        
+        # Eliminar archivos temporales después de consolidar
+        log_func("Limpiando archivos temporales...")
+        for archivo in archivos_procesados:
+            try:
+                archivo.unlink()  # Eliminar archivo
+                log_func(f"Archivo temporal eliminado: {archivo.name}")
+            except Exception as e:
+                log_func(f"Error eliminando {archivo.name}: {e}")
 
         log_func(f"PROCESO CAJA COMPLETADO. Reporte final: {salida_path}")
-        return True, output_dir
+        log_func(f"Archivos organizados en: {caja_output_dir}")
+        return True, caja_output_dir
 
     except Exception as e:
         return False, f"{type(e).__name__}: {e}"
