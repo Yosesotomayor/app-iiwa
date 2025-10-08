@@ -427,14 +427,14 @@ def run_proceso_campo(
         # Crear carpeta organizada para CAMPO
         campo_output_dir = output_dir / "campo_output"
         ensure_dirs(campo_output_dir)
-        
+
         # Mover archivos generados a la carpeta de CAMPO
         archivos_campo = [
             "ReporteRezagoAgua.xlsx",
-            "reporte_macro.xlsx", 
-            "CodigosPostales.xlsx"
+            "reporte_macro.xlsx",
+            "CodigosPostales.xlsx",
         ]
-        
+
         for archivo_name in archivos_campo:
             archivo_path = output_dir / archivo_name
             if archivo_path.exists():
@@ -443,7 +443,7 @@ def run_proceso_campo(
                     log_func(f"Archivo movido: {archivo_name} -> campo_output/")
                 except Exception as e:
                     log_func(f"Error moviendo {archivo_name}: {e}")
-        
+
         # También mover resumen_cps.xlsx del data_dir si existe
         resumen_path = data_dir / "resumen_cps.xlsx"
         if resumen_path.exists():
@@ -474,7 +474,7 @@ def run_proceso_caja(sistema_path: Path, data_dir: Path, output_dir: Path, log_f
         log_func(f"Carpeta de salida: {output_dir}")
 
         ensure_dirs(data_dir, output_dir)
-        
+
         # Crear carpeta organizada para CAJA desde el inicio
         caja_output_dir = output_dir / "caja_output"
         ensure_dirs(caja_output_dir)
@@ -825,7 +825,7 @@ def run_proceso_caja(sistema_path: Path, data_dir: Path, output_dir: Path, log_f
                         log_func(f"Agregado al reporte: {archivo.name}")
                     except Exception as e:
                         log_func(f"Error procesando {archivo.name}: {e}")
-        
+
         # Eliminar archivos temporales después de consolidar
         log_func("Limpiando archivos temporales...")
         for archivo in archivos_procesados:
